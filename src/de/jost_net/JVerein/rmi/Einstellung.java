@@ -544,4 +544,8 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public SepaVersion getCt1SepaVersion() throws RemoteException;
 
+  public boolean getCreateQRCode() throws RemoteException;
+  
+  public void setCreateQRCode(boolean createqrcode) throws RemoteException;
+
 }

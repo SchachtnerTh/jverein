@@ -289,6 +289,8 @@ public class EinstellungControl extends AbstractControl
   private SelectInput buchungBuchungsartAuswahl;
 
   private SelectInput buchungsartsort;
+  
+  private CheckboxInput createqrcode;
 
   private CheckboxInput abrlabschliessen;
 
@@ -1608,6 +1610,15 @@ public class EinstellungControl extends AbstractControl
     return buchungsartsort;
   }
 
+  public CheckboxInput getCreateQRCode() throws RemoteException 
+  {
+	if (null == createqrcode)
+	{
+	  createqrcode = new CheckboxInput(Einstellungen.getEinstellung().getCreateQRCode());
+	}
+	return createqrcode;
+  }
+
   // // public void handleStore()
   // {
   // try
@@ -2019,6 +2030,7 @@ public class EinstellungControl extends AbstractControl
       e.setRechnungTextBar((String) rechnungtextbar.getValue());
       Integer length = (Integer) zaehlerlaenge.getValue();
       e.setZaehlerLaenge(length);
+      e.setCreateQRCode((Boolean)createqrcode.getValue());
 
       e.store();
       Einstellungen.setEinstellung(e);
@@ -2242,5 +2254,4 @@ public class EinstellungControl extends AbstractControl
       }
     }
   }
-
 }

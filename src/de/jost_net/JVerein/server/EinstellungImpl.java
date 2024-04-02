@@ -1817,4 +1817,18 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     }
   }
 
+  @Override
+  public boolean getCreateQRCode() throws RemoteException {
+  	Boolean qr = (Boolean) getAttribute("createqrcode");
+  	if (qr == null)
+  	{
+  	  return false;
+  	}
+  	return qr.booleanValue();
+  }
+
+  @Override
+  public void setCreateQRCode(boolean createqrcode) throws RemoteException {
+  	setAttribute("createqrcode", createqrcode);  	
+  }
 }

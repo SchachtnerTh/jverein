@@ -41,6 +41,7 @@ public class EinstellungenRechnungenView extends AbstractView
         control.getRechnungTextUeberweisung());
     cont.addLabelPair("Text Bar", control.getRechnungTextBar());
     cont.addLabelPair("Zählerlänge", control.getZaehlerLaenge());
+    cont.addLabelPair("QR-Code erzeugen", control.getCreateQRCode());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
