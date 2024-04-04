@@ -1977,7 +1977,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
 		String intro = (String) getAttribute("qrcodeintro");
 		if (null == intro)
 		{
-			return null;
+			return "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen.";
 		}
 		return intro;
 	}

@@ -151,8 +151,8 @@ private static final String EPC_EUR = "EUR";
         {
           Formularfeld f = (Formularfeld) it.next();
           
-          // Increase counter if form field is zaehler
-          if (f.getName().equals(AllgemeineVar.ZAEHLER.getName()) && !increased) 
+          // Increase counter if form field is zaehler or qrcode (counter is needed in QR code, so it needs to be incremented)
+          if ((f.getName().equals(AllgemeineVar.ZAEHLER.getName()) || f.getName().equals(MitgliedskontoVar.QRCODE.getName())) && !increased) 
           {
             zaehler++;
             // Prevent multiple increases by next page
@@ -160,6 +160,11 @@ private static final String EPC_EUR = "EUR";
             // Set new value to field with leading zero to get the defined length
             map.put(AllgemeineVar.ZAEHLER.getName(), StringTool.lpad(
                 zaehler.toString(), zaehlerLaenge, "0"));
+          }
+          
+          // create QR code if form field is QR code
+          if (f.getName().equals(MitgliedskontoVar.QRCODE.getName()))
+          {
             map.put(MitgliedskontoVar.QRCODE.getName(), getPaymentQRCode(map));
             // Update QR code
           }
@@ -280,7 +285,6 @@ private static final String EPC_EUR = "EUR";
 	  	infoToMitglied = "";
 	  }
 	  
-	  
 	  StringBuilder sbEpc = new StringBuilder();
 	  sbEpc.append(EPC_STRING).append("\n");
 	  sbEpc.append(EPC_VERSION).append("\n");
@@ -293,25 +297,23 @@ private static final String EPC_EUR = "EUR";
 	  sbEpc.append(getString(fieldsMap.get(MitgliedskontoVar.SUMME_OFFEN.getName()))).append("\n");
 	  sbEpc.append("\n"); // currently purpose code not used here
 	  sbEpc.append("\n"); // Reference not used, unstructured text used instead
-	  sbEpc.append(verwendungszweck).append("\n");
-	  sbEpc.append(infoToMitglied);
+	  sbEpc.append(verwendungszweck.substring(0, Math.min(verwendungszweck.length(), 140))).append("\n"); // trim to 140 chars max.
+	  sbEpc.append(infoToMitglied.substring(0, Math.min(infoToMitglied.length(), 70))); // trim to 70 chars max.
 	  String charset = EPC_CHARSET;
 	  Map  hintMap = new HashMap();
 	  hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
 	  try 
 	  {
-	    BitMatrix matrix = new MultiFormatWriter().encode(
+
+	  	BitMatrix matrix = new MultiFormatWriter().encode(
 	        new String(sbEpc.toString().getBytes(charset),charset),
 		    BarcodeFormat.QR_CODE,
 		    (int)sz,
 		    (int)sz,
 		    hintMap);
-	    //BufferedImage bi = MatrixToImageWriter.toBufferedImage(matrix);
-	    return MatrixToImageWriter.toBufferedImage(matrix);
-	    //Image i2 = bi;
-	    //com.itextpdf.text.Image i = com.itextpdf.text.Image.getInstance(i2, Color.BLACK);
-	  
-	    //contentByte.addImage(i, sz,0, 0, sz, x, y);
+
+	  	return MatrixToImageWriter.toBufferedImage(matrix);
+	    
 	  } catch (UnsupportedEncodingException e1) {
 		  throw new RemoteException("Fehler", e1);
 	  } catch (WriterException e1) {
@@ -411,7 +413,8 @@ private static final String EPC_EUR = "EUR";
     	if (val instanceof Image)
     	{
   	    com.itextpdf.text.Image i = com.itextpdf.text.Image.getInstance((Image)val, Color.BLACK);
-    	  contentByte.addImage(i, 1,0, 0, 1, x, y);
+  	    float sz = mm2point(Einstellungen.getEinstellung().getQRCodeSizeInMm());
+    	  contentByte.addImage(i, sz,0, 0, sz, x, y);
     	}
     }
   }
