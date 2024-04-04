@@ -41,7 +41,18 @@ public class EinstellungenRechnungenView extends AbstractView
         control.getRechnungTextUeberweisung());
     cont.addLabelPair("Text Bar", control.getRechnungTextBar());
     cont.addLabelPair("Zählerlänge", control.getZaehlerLaenge());
-    cont.addLabelPair("QR-Code erzeugen", control.getCreateQRCode());
+    cont.addLabelPair("QR-Code drucken", control.getCreateQRCode());
+    cont.addLabelPair("Kantenlänge QR-Code", control.getQRCodeSizeInMm());
+    cont.addLabelPair("Position QR-Code von links in mm", control.getQRCodePositionLeftInMm());
+    cont.addLabelPair("Position QR-Code von unten in mm", control.getQRCodePositionBottomInMm());
+    cont.addLabelPair("Verwendungszweck", control.getQRCodeVerwendungszweck());
+    cont.addLabelPair("Verwendungszweck hinzufügen", control.getQRCodePrintVerwendungszweck());
+    cont.addLabelPair("Bei einzelner Position Verwendungszweck ersetzen", control.getQRCodeSingle());
+    cont.addLabelPair("Rechnungsdatum in QR-Code", control.getQRCodeReDa());
+    cont.addLabelPair("Rechnungsnummer in QR-Code", control.getQRCodeReNr());
+    cont.addLabelPair("Mitgliedsnummer in QR-Code", control.getQRCodeMemberNr());
+    cont.addLabelPair("externe Mitgliedsnummer verwenden", control.getQRCodeExt());
+    cont.addLabelPair("Information an Mitglied in QR-Code", control.getQRCodeInfoToMember());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

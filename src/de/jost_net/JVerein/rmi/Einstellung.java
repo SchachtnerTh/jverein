@@ -548,4 +548,48 @@ public interface Einstellung extends DBObject, IBankverbindung
   
   public void setCreateQRCode(boolean createqrcode) throws RemoteException;
 
+  public int getQRCodePositionLeftInMm() throws RemoteException;
+  
+  public void setQRCodePositionLeftInMm(int left) throws RemoteException;
+  
+  public int getQRCodePositionBottomInMm() throws RemoteException;
+  
+  public void setQRCodePositionBottomInMm(int bottom) throws RemoteException;
+
+  public int getQRCodeSizeInMm() throws RemoteException;
+  
+  public void setQRCodeSizeInMm(int size) throws RemoteException;
+
+  public boolean getQRCodeFesterText() throws RemoteException;
+  
+  public void setQRCodeFesterText(boolean printText) throws RemoteException;
+
+  public boolean getQRCodeDatum() throws RemoteException;
+  
+  public void setQRCodeDatum(boolean printDate) throws RemoteException;
+
+  public boolean getQRCodeReNu() throws RemoteException;
+  
+  public void setQRCodeReNu(boolean printNum) throws RemoteException;
+
+  public boolean getQRCodeMember() throws RemoteException;
+  
+  public void setQRCodeMember(boolean printMember) throws RemoteException;
+
+  public String getQRCodeText() throws RemoteException;
+  
+  public void setQRCodeText(String text) throws RemoteException;
+
+  public boolean getQRCodeSnglLine() throws RemoteException;
+  
+  public void setQRCodeSnglLine(boolean single) throws RemoteException;
+
+  public boolean getQRCodeExtNr() throws RemoteException;
+  
+  public void setQRCodeExtNr(boolean useExtNr) throws RemoteException;
+
+  public String getQRCodeInfoM() throws RemoteException;
+  
+  public void setQRCodeInfoM(String infoMitglied) throws RemoteException;
+
 }

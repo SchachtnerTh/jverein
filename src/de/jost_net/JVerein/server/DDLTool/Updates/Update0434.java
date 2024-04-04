@@ -32,5 +32,27 @@ public class Update0434 extends AbstractDDLUpdate
   {
     execute(addColumn("einstellung", new Column("createqrcode",
         COLTYPE.BOOLEAN, 1, null, false, false)));
+    execute(addColumn("einstellung", new Column("qrcodepositionleftmm",
+        COLTYPE.INTEGER, 1, "90", false, false)));
+    execute(addColumn("einstellung", new Column("qrcodepositionbottommm",
+        COLTYPE.INTEGER, 1, "40", false, false)));
+    execute(addColumn("einstellung", new Column("qrcodesizemm",
+        COLTYPE.INTEGER, 1, "30", false, false)));
+    execute(addColumn("einstellung", new Column("qrcodepdate",
+        COLTYPE.BOOLEAN, 1, null, false, false)));
+    execute(addColumn("einstellung", new Column("qrcodeext",
+        COLTYPE.BOOLEAN, 1, null, false, false)));
+    execute(addColumn("einstellung", new Column("qrcodeptext",
+        COLTYPE.BOOLEAN, 1, null, false, false)));
+    execute(addColumn("einstellung", new Column("qrcodepmnum",
+        COLTYPE.BOOLEAN, 1, null, false, false)));
+    execute(addColumn("einstellung", new Column("qrcodeprenum",
+        COLTYPE.BOOLEAN, 1, null, false, false)));
+    execute(addColumn("einstellung", new Column("qrcodesngl",
+        COLTYPE.BOOLEAN, 1, null, false, false)));
+    execute(addColumn("einstellung", new Column("qrcodetext",
+        COLTYPE.VARCHAR, 140, null, false, false)));
+    execute(addColumn("einstellung", new Column("qrcodeinfom",
+        COLTYPE.VARCHAR, 70, null, false, false)));
   }
 }
