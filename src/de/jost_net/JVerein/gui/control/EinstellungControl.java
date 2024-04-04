@@ -1634,20 +1634,20 @@ public class EinstellungControl extends AbstractControl
 
   public CheckboxInput getCreateQRCode() throws RemoteException 
   {
-	if (null == createqrcode)
-	{
-	  createqrcode = new CheckboxInput(Einstellungen.getEinstellung().getCreateQRCode());
-	}
-	return createqrcode;
+		if (null == createqrcode)
+		{
+		  createqrcode = new CheckboxInput(Einstellungen.getEinstellung().getCreateQRCode());
+		}
+		return createqrcode;
   }
   
   public IntegerInput getQRCodePositionLeftInMm() throws RemoteException
   {
-	if (null == qrcodeleftpos)
-	{
-		qrcodeleftpos = new IntegerInput(Einstellungen.getEinstellung().getQRCodePositionLeftInMm());
-	}
-	return qrcodeleftpos;
+		if (null == qrcodeleftpos)
+		{
+			qrcodeleftpos = new IntegerInput(Einstellungen.getEinstellung().getQRCodePositionLeftInMm());
+		}
+		return qrcodeleftpos;
   }
 
   public IntegerInput getQRCodePositionBottomInMm() throws RemoteException
