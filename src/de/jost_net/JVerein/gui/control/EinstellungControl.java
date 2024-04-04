@@ -317,6 +317,10 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput qrcodeext;
   
   private TextInput qrcodeinfom;
+  
+  private TextInput qrcodeintro;
+  
+  private CheckboxInput qrcodekuerzen;
 
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
@@ -1631,33 +1635,6 @@ public class EinstellungControl extends AbstractControl
         new BuchungsartSort(Einstellungen.getEinstellung().getBuchungsartSort()));
     return buchungsartsort;
   }
-
-  public CheckboxInput getCreateQRCode() throws RemoteException 
-  {
-		if (null == createqrcode)
-		{
-		  createqrcode = new CheckboxInput(Einstellungen.getEinstellung().getCreateQRCode());
-		}
-		return createqrcode;
-  }
-  
-  public IntegerInput getQRCodePositionLeftInMm() throws RemoteException
-  {
-		if (null == qrcodeleftpos)
-		{
-			qrcodeleftpos = new IntegerInput(Einstellungen.getEinstellung().getQRCodePositionLeftInMm());
-		}
-		return qrcodeleftpos;
-  }
-
-  public IntegerInput getQRCodePositionBottomInMm() throws RemoteException
-  {
-  	if (null == qrcodebottompos)
-  	{
-  		qrcodebottompos = new IntegerInput(Einstellungen.getEinstellung().getQRCodePositionBottomInMm());
-  	}
-  	return qrcodebottompos;
-  }
   
   public IntegerInput getQRCodeSizeInMm() throws RemoteException
   {
@@ -1732,6 +1709,21 @@ public class EinstellungControl extends AbstractControl
 		return qrcodeinfom;
 	}
 
+	public CheckboxInput getQRCodeKuerzen() throws RemoteException {
+		if (null ==qrcodekuerzen)
+		{
+			qrcodekuerzen = new CheckboxInput(Einstellungen.getEinstellung().getQRCodeKuerzen());
+		}
+		return qrcodekuerzen;
+	}
+
+	public TextInput getQRCodeIntro() throws RemoteException {
+		if (null == qrcodeintro)
+		{
+			qrcodeintro = new TextInput(Einstellungen.getEinstellung().getQRCodeIntro());
+		}
+		return qrcodeintro;
+	}
 
   // // public void handleStore()
   // {
@@ -2144,10 +2136,7 @@ public class EinstellungControl extends AbstractControl
       e.setRechnungTextBar((String) rechnungtextbar.getValue());
       Integer length = (Integer) zaehlerlaenge.getValue();
       e.setZaehlerLaenge(length);
-      e.setCreateQRCode((Boolean)createqrcode.getValue());
       e.setQRCodeSizeInMm((Integer)qrcodesize.getValue());
-      e.setQRCodePositionLeftInMm((Integer)qrcodeleftpos.getValue());
-      e.setQRCodePositionBottomInMm((Integer)qrcodebottompos.getValue());
       
       e.setQRCodeDatum((Boolean)qrcodepdate.getValue());
       e.setQRCodeExtNr((Boolean)qrcodeext.getValue());
@@ -2157,6 +2146,8 @@ public class EinstellungControl extends AbstractControl
       e.setQRCodeReNu((Boolean)qrcodeprenum.getValue());
       e.setQRCodeSnglLine((Boolean)qrcodesngl.getValue());
       e.setQRCodeText((String)qrcodetext.getValue());
+      e.setQRCodeIntro((String)qrcodeintro.getValue());
+      e.setQRCodeKuerzen((Boolean)qrcodekuerzen.getValue());
 
       e.store();
       Einstellungen.setEinstellung(e);

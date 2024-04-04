@@ -23,14 +23,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.itextpdf.text.Image;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
+import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Mitgliedskonto;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 
 public class MitgliedskontoMap
 {
-
+	
   public MitgliedskontoMap()
   {
     //
@@ -64,6 +67,7 @@ public class MitgliedskontoMap
     double summe = 0;
     double saldo = 0;
     double suist = 0;
+    String verwendungszweck;
     for (Mitgliedskonto mkto : mk)
     {
       buda.add(mkto.getDatum());
@@ -94,6 +98,11 @@ public class MitgliedskontoMap
       betrag.add(summe);
       differenz.add(saldo);
       ist.add(suist);
+      verwendungszweck = Einstellungen.getEinstellung().getQRCodeText();
+    }
+    else
+    {
+    	verwendungszweck = zg.get(0);
     }
     map.put(FormularfeldControl.BUCHUNGSDATUM, buda.toArray());
     map.put(FormularfeldControl.ZAHLUNGSGRUND, zg.toArray());
@@ -110,10 +119,11 @@ public class MitgliedskontoMap
     map.put(MitgliedskontoVar.DIFFERENZ.getName(), differenz.toArray());
     map.put(MitgliedskontoVar.STAND.getName(), Double.valueOf(-1 * saldo));
     map.put(MitgliedskontoVar.SUMME_OFFEN.getName(), Double.valueOf(saldo));
+    map.put(MitgliedskontoVar.QRCODE_INTRO.getName(), Einstellungen.getEinstellung().getQRCodeIntro());
     return map;
   }
 
-  public Map<String, Object> getMap(Mitgliedskonto mk, Map<String, Object> inma)
+	public Map<String, Object> getMap(Mitgliedskonto mk, Map<String, Object> inma)
       throws RemoteException
   {
     Map<String, Object> map = null;

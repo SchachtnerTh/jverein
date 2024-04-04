@@ -1818,55 +1818,6 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   }
 
   @Override
-  public boolean getCreateQRCode() throws RemoteException 
-  {
-  	Boolean qr = (Boolean) getAttribute("createqrcode");
-  	if (null == qr)
-  	{
-  	  return false;
-  	}
-  	return qr.booleanValue();
-  }
-
-  @Override
-  public void setCreateQRCode(boolean createqrcode) throws RemoteException 
-  {
-  	setAttribute("createqrcode", createqrcode);  	
-  }
-
-  @Override
-  public int getQRCodePositionLeftInMm() throws RemoteException 
-  {
-  	Integer left = (Integer) getAttribute("qrcodepositionleftmm");
-  	if (null == left)
-  	{
-  		return 0;
-  	}
-  	return left.intValue();
-  }
-
-  @Override
-  public void setQRCodePositionLeftInMm(int left) throws RemoteException {
-  	setAttribute("qrcodepositionleftmm", left);
-  }
-
-  @Override
-  public int getQRCodePositionBottomInMm() throws RemoteException {
-		Integer bottom = (Integer) getAttribute("qrcodepositionbottommm");
-		if (null == bottom)
-		{
-		  return 0;
-		}
-		return bottom.intValue();
-  }
-
-  @Override
-  public void setQRCodePositionBottomInMm(int bottom) throws RemoteException 
-  {
-  	setAttribute("qrcodepositionbottommm", bottom);
-  }
-
-  @Override
   public int getQRCodeSizeInMm() throws RemoteException {
 		Integer qrsizemm = (Integer) getAttribute("qrcodesizemm");
 		if (null == qrsizemm)
@@ -1982,12 +1933,14 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
 	}
 	
 	@Override
-	public void setQRCodeExtNr(boolean useExtNr) throws RemoteException {
+	public void setQRCodeExtNr(boolean useExtNr) throws RemoteException 
+	{
 		setAttribute("qrcodeext", useExtNr);
 	}
 	
 	@Override
-	public String getQRCodeInfoM() throws RemoteException {
+	public String getQRCodeInfoM() throws RemoteException 
+	{
   	String qrInfoToMember = (String) getAttribute("qrcodeinfom");
   	if (null == qrInfoToMember)
   	{
@@ -1997,7 +1950,41 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
 	}
 	
 	@Override
-	public void setQRCodeInfoM(String infoMitglied) throws RemoteException {
+	public void setQRCodeInfoM(String infoMitglied) throws RemoteException 
+	{
 		setAttribute("qrcodeinfom", infoMitglied);
 	}
+
+	@Override
+	public boolean getQRCodeKuerzen() throws RemoteException
+	{
+		Boolean kuerzen = (Boolean) getAttribute("qrcodekuerzen");
+		if (null == kuerzen)
+		{
+			return false;
+		}
+		return kuerzen.booleanValue();
+	}
+
+	@Override
+	public void setQRCodeKuerzen(boolean kuerzen) throws RemoteException
+	{
+		setAttribute("qrcodekuerzen", kuerzen);
+	}
+
+	@Override
+	public String getQRCodeIntro() throws RemoteException {
+		String intro = (String) getAttribute("qrcodeintro");
+		if (null == intro)
+		{
+			return null;
+		}
+		return intro;
+	}
+
+	@Override
+	public void setQRCodeIntro(String intro) throws RemoteException {
+		setAttribute("qrcodeintro", intro);		
+	}
+	
 }

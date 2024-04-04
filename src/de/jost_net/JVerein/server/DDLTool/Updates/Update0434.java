@@ -30,12 +30,6 @@ public class Update0434 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("einstellung", new Column("createqrcode",
-        COLTYPE.BOOLEAN, 1, null, false, false)));
-    execute(addColumn("einstellung", new Column("qrcodepositionleftmm",
-        COLTYPE.INTEGER, 1, "90", false, false)));
-    execute(addColumn("einstellung", new Column("qrcodepositionbottommm",
-        COLTYPE.INTEGER, 1, "40", false, false)));
     execute(addColumn("einstellung", new Column("qrcodesizemm",
         COLTYPE.INTEGER, 1, "30", false, false)));
     execute(addColumn("einstellung", new Column("qrcodepdate",
@@ -54,5 +48,10 @@ public class Update0434 extends AbstractDDLUpdate
         COLTYPE.VARCHAR, 140, null, false, false)));
     execute(addColumn("einstellung", new Column("qrcodeinfom",
         COLTYPE.VARCHAR, 70, null, false, false)));
+    execute(addColumn("einstellung", new Column("qrcodeintro",
+        COLTYPE.VARCHAR, 255, null, false, false)));
+    execute(addColumn("einstellung", new Column("qrcodekuerzen",
+        COLTYPE.BOOLEAN, 1, null, false, false)));
+
   }
 }

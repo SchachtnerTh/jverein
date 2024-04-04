@@ -544,18 +544,6 @@ public interface Einstellung extends DBObject, IBankverbindung
 
   public SepaVersion getCt1SepaVersion() throws RemoteException;
 
-  public boolean getCreateQRCode() throws RemoteException;
-  
-  public void setCreateQRCode(boolean createqrcode) throws RemoteException;
-
-  public int getQRCodePositionLeftInMm() throws RemoteException;
-  
-  public void setQRCodePositionLeftInMm(int left) throws RemoteException;
-  
-  public int getQRCodePositionBottomInMm() throws RemoteException;
-  
-  public void setQRCodePositionBottomInMm(int bottom) throws RemoteException;
-
   public int getQRCodeSizeInMm() throws RemoteException;
   
   public void setQRCodeSizeInMm(int size) throws RemoteException;
@@ -591,5 +579,13 @@ public interface Einstellung extends DBObject, IBankverbindung
   public String getQRCodeInfoM() throws RemoteException;
   
   public void setQRCodeInfoM(String infoMitglied) throws RemoteException;
+
+	public boolean getQRCodeKuerzen() throws RemoteException;
+	
+	public void setQRCodeKuerzen(boolean kuerzen) throws RemoteException;
+	
+	public String getQRCodeIntro() throws RemoteException;
+	
+	public void setQRCodeIntro(String intro) throws RemoteException;
 
 }

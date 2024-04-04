@@ -46,6 +46,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineVar;
+import de.jost_net.JVerein.Variable.MitgliedVar;
+import de.jost_net.JVerein.Variable.MitgliedskontoVar;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
@@ -158,13 +160,12 @@ private static final String EPC_EUR = "EUR";
             // Set new value to field with leading zero to get the defined length
             map.put(AllgemeineVar.ZAEHLER.getName(), StringTool.lpad(
                 zaehler.toString(), zaehlerLaenge, "0"));
+            map.put(MitgliedskontoVar.QRCODE.getName(), getPaymentQRCode(map));
+            // Update QR code
           }
           
           goFormularfeld(contentByte, f, map.get(f.getName()));
         }
-        
-        // write QR code if needed
-        addPaymentQRCode(e, contentByte, map);
       }
          
       // Set counter to form (not yet saved to the DB)
@@ -179,157 +180,144 @@ private static final String EPC_EUR = "EUR";
       throw new RemoteException("Fehler", e);
     }
   }
-
+  
   @SuppressWarnings({ "unchecked", "rawtypes" })
-  private void addPaymentQRCode(Einstellung e, PdfContentByte contentByte, Map fieldsMap) throws RemoteException {
-    if (true == e.getCreateQRCode())
-    {
-  	  float x = mm2point(((Integer)e.getQRCodePositionLeftInMm()).floatValue());
-	  float y = mm2point(((Integer)e.getQRCodePositionBottomInMm()).floatValue());
+  private Image getPaymentQRCode(Map fieldsMap) throws RemoteException {
+  	
+  	Einstellung e = Einstellungen.getEinstellung();
+  	
+	  boolean festerText = e.getQRCodeFesterText();
+	  boolean rechnungDatum = e.getQRCodeDatum();
+	  boolean rechnungNummer = e.getQRCodeReNu();
+	  boolean mitgliedNummer = e.getQRCodeMember();
+	  
 	  float sz = mm2point(((Integer)e.getQRCodeSizeInMm()).floatValue());
-
 	  
-	  // different variants for Verwendungszweck:
-	  // 1: Mitgliedsbeitrag 2024
-	  // 2: Mitgliedsbeitrag 9/2024
-	  // 3: Mitgliedsbeitrag September 2024
-	  // 4: Rechnung 00009
-	  // 5: Rechnung 00010 vom 12.12.23
-	  // Dazu überall noch Optional:
-	  // Opt: Mitglied 3423
-	  // Opt: Mitglied ext-323
-	  // alternativ: bei nur einer Buchung: diesen Text
-	  
-	  if (null == fieldsMap) throw new RemoteException("Keine Felder verfügbar.");
-	  String zahlungsgruende_raw = getString(fieldsMap.get("mitgliedskonto_zahlungsgrund"));
-	  String[] zahlungsgruende = zahlungsgruende_raw.split("\n");
-	  
-	  boolean singleLine = false;
-	  boolean festerText, rechnungDatum, rechnungNummer, mitgliedNummer;
-	  if (zahlungsgruende.length == 1) singleLine = true;
-
-	  String verwendungszweck_Thema="";
-	  String verwendungszweck_ReDa="";
-	  String verwendungszweck_MitgliedNr="";
-	  String verwendungszweck="";
-	  
-	  festerText = e.getQRCodeFesterText();
-	  rechnungDatum = e.getQRCodeDatum();
-	  rechnungNummer = e.getQRCodeReNu();
-	  mitgliedNummer = e.getQRCodeMember();
+	  StringBuilder sb = new StringBuilder();
+	  String verwendungszweck;
+	  String infoToMitglied;
 	  
 	  if (true == festerText)
 	  {
-		verwendungszweck_Thema = e.getQRCodeText();
-		if (e.getQRCodeSnglLine() && singleLine)
-		{
-		  verwendungszweck_Thema = zahlungsgruende[0];
-		}
+		  String zahlungsgruende_raw = getString(fieldsMap.get(MitgliedskontoVar.ZAHLUNGSGRUND.getName()));
+		  String[] zahlungsgruende = zahlungsgruende_raw.split("\n");
+		  if (zahlungsgruende.length == 1 && e.getQRCodeSnglLine())
+		  {
+	  	  sb.append(zahlungsgruende[0]);
+		  }
+		  else
+		  {
+		  	sb.append(e.getQRCodeText());
+		  }
+			if (rechnungDatum || rechnungNummer || mitgliedNummer)
+			{
+			  sb.append(", ");
+			}
 	  }
 	  
 	  if (rechnungDatum || rechnungNummer)
 	  {
-	  	StringBuilder reDa = new StringBuilder();
-    	reDa.append("Rechnung ");
-	    if (true == rechnungNummer)
-	    {
-	    	String zaehler = getString(fieldsMap.get("zaehler"));
-	    	reDa.append(zaehler).append(" ");
-	    }
-  	  if (true == rechnungDatum)
-  	  {
-  	  	String tagesdatum = getString(fieldsMap.get("tagesdatum"));
-  	  	reDa.append("vom ").append(tagesdatum);
-  	  }
-  	  verwendungszweck_ReDa = reDa.toString();
+	  	if (e.getQRCodeKuerzen())
+	  	{
+	  		sb.append("Re. ");
+	  	}
+	  	else
+	  	{
+	  		sb.append("Rechnung ");
+	  	}
+	  	if (true == rechnungNummer)
+	  	{
+	  		sb.append(fieldsMap.get(AllgemeineVar.ZAEHLER.getName()));
+	  		if (true == rechnungDatum)
+	  		{
+	  			sb.append(" ");
+	  		}
+	  	}
+	  	if (true == rechnungDatum)
+	  	{
+	  		if (e.getQRCodeKuerzen())
+	  		{
+	  			sb.append("v. ");
+	  		}
+	  		else
+	  		{
+	  			sb.append("vom ");
+	  		}
+	  		sb.append(fieldsMap.get(AllgemeineVar.TAGESDATUM.getName()));
+	  	}
+	  	if (true == mitgliedNummer)
+	  	{
+	  		sb.append(", ");
+	  	}
 	  }
 	  
 	  if (true == mitgliedNummer)
 	  {
-	  	String mitglied_id;
+	  	if (true == e.getQRCodeKuerzen())
+	  	{
+	  		sb.append("Mitgl. ");
+	  	}
+	  	else
+	  	{
+	  		sb.append("Mitglied ");
+	  	}
+	  	
 	  	if (true == e.getQRCodeExtNr())
 	  	{
-	  		mitglied_id = getString(fieldsMap.get("mitglied_externe_mitgliedsnummer"));
-	  	} else {
-	  		mitglied_id = getString(fieldsMap.get("mitglied_id"));
+	  		sb.append(getString(fieldsMap.get(MitgliedVar.EXTERNE_MITGLIEDSNUMMER.getName())));
 	  	}
-	  	verwendungszweck_MitgliedNr = "Mitglied " + mitglied_id;
+	  	else
+	  	{
+	  		sb.append(getString(fieldsMap.get(MitgliedVar.ID.getName())));
+	  	}
 	  }
 	  
-	  StringBuilder vwBuilder = new StringBuilder();
-	  if (festerText) 
-	  {
-			vwBuilder.append(verwendungszweck_Thema);
-			if (rechnungDatum || rechnungNummer || mitgliedNummer)
-			{
-			  vwBuilder.append(", ");
-			}
-	  }
-	  if (rechnungDatum || rechnungNummer)
-	  {
-			vwBuilder.append(verwendungszweck_ReDa);
-			if (mitgliedNummer)
-			{
-			  vwBuilder.append(", ");
-			}
-	  }
-	  if (mitgliedNummer)
-	  {
-	  	vwBuilder.append(verwendungszweck_MitgliedNr);
-	  }
+	  verwendungszweck = sb.toString();
 	  
-	  verwendungszweck = vwBuilder.toString();
-	  
-	  String infoToMitglied = e.getQRCodeInfoM();
+	  infoToMitglied = e.getQRCodeInfoM();
 	  if (null == infoToMitglied)
 	  {
 	  	infoToMitglied = "";
 	  }
 	  
 	  
-	  StringBuilder sb = new StringBuilder();
-	  sb.append(EPC_STRING).append("\n");
-	  sb.append(EPC_VERSION).append("\n");
-	  sb.append(EPC_CHARSET_NR).append("\n");
-	  sb.append(EPC_ID).append("\n");
-	  sb.append(e.getBic()).append("\n");
-	  sb.append(e.getName()).append("\n");
-	  sb.append(e.getIban()).append("\n");
-	  sb.append(EPC_EUR);
-	  sb.append("123.45").append("\n");
-	  sb.append("\n"); // currently purpose code not used here
-	  sb.append("\n"); // Reference not used, unstructured text used instead
-	  sb.append(verwendungszweck).append("\n");
-	  sb.append(infoToMitglied);
+	  StringBuilder sbEpc = new StringBuilder();
+	  sbEpc.append(EPC_STRING).append("\n");
+	  sbEpc.append(EPC_VERSION).append("\n");
+	  sbEpc.append(EPC_CHARSET_NR).append("\n");
+	  sbEpc.append(EPC_ID).append("\n");
+	  sbEpc.append(e.getBic()).append("\n");
+	  sbEpc.append(e.getName()).append("\n");
+	  sbEpc.append(e.getIban()).append("\n");
+	  sbEpc.append(EPC_EUR);
+	  sbEpc.append(getString(fieldsMap.get(MitgliedskontoVar.SUMME_OFFEN.getName()))).append("\n");
+	  sbEpc.append("\n"); // currently purpose code not used here
+	  sbEpc.append("\n"); // Reference not used, unstructured text used instead
+	  sbEpc.append(verwendungszweck).append("\n");
+	  sbEpc.append(infoToMitglied);
 	  String charset = EPC_CHARSET;
 	  Map  hintMap = new HashMap();
 	  hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
 	  try 
 	  {
 	    BitMatrix matrix = new MultiFormatWriter().encode(
-	        new String(sb.toString().getBytes(charset),charset),
+	        new String(sbEpc.toString().getBytes(charset),charset),
 		    BarcodeFormat.QR_CODE,
-		    300,
-		    300,
+		    (int)sz,
+		    (int)sz,
 		    hintMap);
-	    BufferedImage bi = MatrixToImageWriter.toBufferedImage(matrix);
-	    Image i2 = bi;
-	    com.itextpdf.text.Image i = com.itextpdf.text.Image.getInstance(i2, Color.BLACK);
+	    //BufferedImage bi = MatrixToImageWriter.toBufferedImage(matrix);
+	    return MatrixToImageWriter.toBufferedImage(matrix);
+	    //Image i2 = bi;
+	    //com.itextpdf.text.Image i = com.itextpdf.text.Image.getInstance(i2, Color.BLACK);
 	  
-	    contentByte.addImage(i, sz,0, 0, sz, x, y);
+	    //contentByte.addImage(i, sz,0, 0, sz, x, y);
 	  } catch (UnsupportedEncodingException e1) {
 		  throw new RemoteException("Fehler", e1);
 	  } catch (WriterException e1) {
 		  throw new RemoteException("Fehler", e1);
-	  } catch (BadElementException e1) {
-		  throw new RemoteException("Fehler", e1);
-	  } catch (IOException e1) {
-		  throw new RemoteException("Fehler", e1);
-	  } catch (DocumentException e1) {
-		  throw new RemoteException("Fehler", e1);
-	  }
+	  } 
 	}
-  }
 
   /**
    * Schließen des aktuellen Formulars, damit die Datei korrekt gespeichert wird
@@ -398,24 +386,33 @@ private static final String EPC_EUR = "EUR";
     {
       return;
     }
-    buendig = links;
-    String stringVal = getString(val);
-    stringVal = stringVal.replace("\\n", "\n");
-    stringVal = stringVal.replaceAll("\r\n", "\n");
-    String[] ss = stringVal.split("\n");
-    for (String s : ss)
+    if (val instanceof String)
     {
-      contentByte.setFontAndSize(bf, feld.getFontsize().floatValue());
-      contentByte.beginText();
-      float offset = 0;
-      if (buendig == rechts)
-      {
-        offset = contentByte.getEffectiveStringWidth(s, true);
-      }
-      contentByte.moveText(x - offset, y);
-      contentByte.showText(s);
-      contentByte.endText();
-      y -= feld.getFontsize().floatValue() + 3;
+	    buendig = links;
+	    String stringVal = getString(val);
+	    stringVal = stringVal.replace("\\n", "\n");
+	    stringVal = stringVal.replaceAll("\r\n", "\n");
+	    String[] ss = stringVal.split("\n");
+	    for (String s : ss)
+	    {
+	      contentByte.setFontAndSize(bf, feld.getFontsize().floatValue());
+	      contentByte.beginText();
+	      float offset = 0;
+	      if (buendig == rechts)
+	      {
+	        offset = contentByte.getEffectiveStringWidth(s, true);
+	      }
+	      contentByte.moveText(x - offset, y);
+	      contentByte.showText(s);
+	      contentByte.endText();
+	      y -= feld.getFontsize().floatValue() + 3;
+	    }
+    } else {
+    	if (val instanceof Image)
+    	{
+  	    com.itextpdf.text.Image i = com.itextpdf.text.Image.getInstance((Image)val, Color.BLACK);
+    	  contentByte.addImage(i, 1,0, 0, 1, x, y);
+    	}
     }
   }
 
