@@ -16,13 +16,26 @@
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
+import java.awt.Color;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.BaseFont;
@@ -60,10 +73,22 @@ public class FormularAufbereitung
 
   private static final int rechts = 2;
 
+  private static final String EPC_STRING = "BCD";
+
+  private static final String EPC_VERSION = "002";
+
+  private static final String EPC_CHARSET_NR = "2"; // 2 = ISO-8859-1, 1 = UTF-8
+
+  private static final String EPC_CHARSET = "ISO-8859-1"; // must match above
+
+  private static final String EPC_ID = "SCT";
+
+  private static final String EPC_EUR = "EUR";
+
   private int buendig = links;
 
   /**
-   * Öffnet die Datei und startet die PDF-Generierung
+   * ï¿½ffnet die Datei und startet die PDF-Generierung
    * 
    * @param f
    *          Die Datei, in die geschrieben werden soll
@@ -137,8 +162,11 @@ public class FormularAufbereitung
           
           goFormularfeld(contentByte, f, map.get(f.getName()));
         }
+
+        // write QR code if needed
+        addPaymentQRCode(e, contentByte, map);
       }
-      
+
       // Set counter to form (not yet saved to the DB)
       formular.setZaehler(zaehler);
     }
@@ -152,8 +180,175 @@ public class FormularAufbereitung
     }
   }
 
+  @SuppressWarnings({ "unchecked", "rawtypes" })
+  private void addPaymentQRCode(Einstellung e, PdfContentByte contentByte,
+      Map fieldsMap) throws RemoteException
+  {
+    if (true == e.getCreateQRCode())
+    {
+      float x = mm2point(
+          ((Integer) e.getQRCodePositionLeftInMm()).floatValue());
+      float y = mm2point(
+          ((Integer) e.getQRCodePositionBottomInMm()).floatValue());
+      float sz = mm2point(((Integer) e.getQRCodeSizeInMm()).floatValue());
+
+      // different variants for Verwendungszweck:
+      // 1: Mitgliedsbeitrag 2024
+      // 2: Mitgliedsbeitrag 9/2024
+      // 3: Mitgliedsbeitrag September 2024
+      // 4: Rechnung 00009
+      // 5: Rechnung 00010 vom 12.12.23
+      // Dazu ï¿½berall noch Optional:
+      // Opt: Mitglied 3423
+      // Opt: Mitglied ext-323
+      // alternativ: bei nur einer Buchung: diesen Text
+
+      if (null == fieldsMap)
+        throw new RemoteException("Keine Felder verfï¿½gbar.");
+      String zahlungsgruende_raw = getString(
+          fieldsMap.get("mitgliedskonto_zahlungsgrund"));
+      String[] zahlungsgruende = zahlungsgruende_raw.split("\n");
+
+      boolean singleLine = false;
+      boolean festerText, rechnungDatum, rechnungNummer, mitgliedNummer;
+      if (zahlungsgruende.length == 1)
+        singleLine = true;
+
+      String verwendungszweck_Thema = "";
+      String verwendungszweck_ReDa = "";
+      String verwendungszweck_MitgliedNr = "";
+      String verwendungszweck = "";
+
+      festerText = e.getQRCodeFesterText();
+      rechnungDatum = e.getQRCodeDatum();
+      rechnungNummer = e.getQRCodeReNu();
+      mitgliedNummer = e.getQRCodeMember();
+
+      if (true == festerText)
+      {
+        verwendungszweck_Thema = e.getQRCodeText();
+        if (e.getQRCodeSnglLine() && singleLine)
+        {
+          verwendungszweck_Thema = zahlungsgruende[0];
+        }
+      }
+
+      if (rechnungDatum || rechnungNummer)
+      {
+        StringBuilder reDa = new StringBuilder();
+        reDa.append("Rechnung ");
+        if (true == rechnungNummer)
+        {
+          String zaehler = getString(fieldsMap.get("zaehler"));
+          reDa.append(zaehler).append(" ");
+        }
+        if (true == rechnungDatum)
+        {
+          String tagesdatum = getString(fieldsMap.get("tagesdatum"));
+          reDa.append("vom ").append(tagesdatum);
+        }
+        verwendungszweck_ReDa = reDa.toString();
+      }
+
+      if (true == mitgliedNummer)
+      {
+        String mitglied_id;
+        if (true == e.getQRCodeExtNr())
+        {
+          mitglied_id = getString(
+              fieldsMap.get("mitglied_externe_mitgliedsnummer"));
+        }
+        else
+        {
+          mitglied_id = getString(fieldsMap.get("mitglied_id"));
+        }
+        verwendungszweck_MitgliedNr = "Mitglied " + mitglied_id;
+      }
+
+      StringBuilder vwBuilder = new StringBuilder();
+      if (festerText)
+      {
+        vwBuilder.append(verwendungszweck_Thema);
+        if (rechnungDatum || rechnungNummer || mitgliedNummer)
+        {
+          vwBuilder.append(", ");
+        }
+      }
+      if (rechnungDatum || rechnungNummer)
+      {
+        vwBuilder.append(verwendungszweck_ReDa);
+        if (mitgliedNummer)
+        {
+          vwBuilder.append(", ");
+        }
+      }
+      if (mitgliedNummer)
+      {
+        vwBuilder.append(verwendungszweck_MitgliedNr);
+      }
+
+      verwendungszweck = vwBuilder.toString();
+
+      String infoToMitglied = e.getQRCodeInfoM();
+      if (null == infoToMitglied)
+      {
+        infoToMitglied = "";
+      }
+
+      StringBuilder sb = new StringBuilder();
+      sb.append(EPC_STRING).append("\n");
+      sb.append(EPC_VERSION).append("\n");
+      sb.append(EPC_CHARSET_NR).append("\n");
+      sb.append(EPC_ID).append("\n");
+      sb.append(e.getBic()).append("\n");
+      sb.append(e.getName()).append("\n");
+      sb.append(e.getIban()).append("\n");
+      sb.append(EPC_EUR);
+      sb.append("123.45").append("\n");
+      sb.append("\n"); // currently purpose code not used here
+      sb.append("\n"); // Reference not used, unstructured text used instead
+      sb.append(verwendungszweck).append("\n");
+      sb.append(infoToMitglied);
+      String charset = EPC_CHARSET;
+      Map hintMap = new HashMap();
+      hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
+      try
+      {
+        BitMatrix matrix = new MultiFormatWriter().encode(
+            new String(sb.toString().getBytes(charset), charset),
+            BarcodeFormat.QR_CODE, 300, 300, hintMap);
+        BufferedImage bi = MatrixToImageWriter.toBufferedImage(matrix);
+        Image i2 = bi;
+        com.itextpdf.text.Image i = com.itextpdf.text.Image.getInstance(i2,
+            Color.BLACK);
+
+        contentByte.addImage(i, sz, 0, 0, sz, x, y);
+      }
+      catch (UnsupportedEncodingException e1)
+      {
+        throw new RemoteException("Fehler", e1);
+      }
+      catch (WriterException e1)
+      {
+        throw new RemoteException("Fehler", e1);
+      }
+      catch (BadElementException e1)
+      {
+        throw new RemoteException("Fehler", e1);
+      }
+      catch (IOException e1)
+      {
+        throw new RemoteException("Fehler", e1);
+      }
+      catch (DocumentException e1)
+      {
+        throw new RemoteException("Fehler", e1);
+      }
+    }
+  }
+
   /**
-   * Schließen des aktuellen Formulars, damit die Datei korrekt gespeichert wird
+   * Schlieï¿½en des aktuellen Formulars, damit die Datei korrekt gespeichert wird
    * 
    * @throws IOException
    */
