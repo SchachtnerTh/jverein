@@ -20,3 +20,6 @@ _book
 *.epub
 *.mobi
 *.pdf
+
+# JVerein
+.settings/

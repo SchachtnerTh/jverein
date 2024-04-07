@@ -290,12 +290,34 @@ public class EinstellungControl extends AbstractControl
 
   private SelectInput buchungsartsort;
 
+  private IntegerInput qrcodesize;
+
   private CheckboxInput abrlabschliessen;
 
   private CheckboxInput optiert;
 
+  private CheckboxInput qrcodeptext;
+
+  private CheckboxInput qrcodepdate;
+
+  private CheckboxInput qrcodeprenum;
+
+  private CheckboxInput qrcodepmnum;
+
+  private TextInput qrcodetext;
+
+  private CheckboxInput qrcodesngl;
+
+  private CheckboxInput qrcodeext;
+
+  private TextInput qrcodeinfom;
+
+  private TextInput qrcodeintro;
+
+  private CheckboxInput qrcodekuerzen;
+
   /**
-   * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
+   * Verschlï¿½sselte Datei fï¿½r besonders sensible Daten (Passwï¿½rter)
    */
   private Wallet wallet = null;
 
@@ -503,7 +525,7 @@ public class EinstellungControl extends AbstractControl
     sepadatumoffset = new ScaleInput(Einstellungen.getEinstellung()
         .getSEPADatumOffset(), SWT.HORIZONTAL);
     sepadatumoffset.setScaling(0, 14, 1, 1);
-    sepadatumoffset.setName("Zusätzliche SEPA-Vorlaufzeit");
+    sepadatumoffset.setName("Zusï¿½tzliche SEPA-Vorlaufzeit");
     SEPADatumOffsetListener listener = new SEPADatumOffsetListener();
     sepadatumoffset.addListener(listener);
     listener.handleEvent(null); // einmal initial ausloesen
@@ -652,7 +674,7 @@ public class EinstellungControl extends AbstractControl
     return kursteilnehmergebgespflicht;
   }
 
-  // TODO deaktiviert für Versionsbau
+  // TODO deaktiviert fï¿½r Versionsbau
   // public CheckboxInput getInventar() throws RemoteException
   // {
   // if (inventar != null)
@@ -935,7 +957,7 @@ public class EinstellungControl extends AbstractControl
     autobuchunguebernahme = new CheckboxInput(Einstellungen.getEinstellung()
         .getAutoBuchunguebernahme());
     autobuchunguebernahme
-        .setName("Automatische Buchungsübernahme aus Hibiscus");
+        .setName("Automatische Buchungsï¿½bernahme aus Hibiscus");
     return autobuchunguebernahme;
   }
 
@@ -948,7 +970,7 @@ public class EinstellungControl extends AbstractControl
     unterdrueckungohnebuchung = new CheckboxInput(Einstellungen
         .getEinstellung().getUnterdrueckungOhneBuchung());
     unterdrueckungohnebuchung
-        .setName("Listen: Buchungsarten ohne Buchung unterdrücken");
+        .setName("Listen: Buchungsarten ohne Buchung unterdrï¿½cken");
     return unterdrueckungohnebuchung;
   }
   
@@ -1279,7 +1301,7 @@ public class EinstellungControl extends AbstractControl
     sepaversion = new SelectInput(list, 
         Einstellungen.getEinstellung().getSepaVersion());
     sepaversion.setAttribute("file");
-    sepaversion.setPleaseChoose("Bitte auswählen");
+    sepaversion.setPleaseChoose("Bitte auswï¿½hlen");
     return sepaversion;
   }
   
@@ -1294,7 +1316,7 @@ public class EinstellungControl extends AbstractControl
     ct1sepaversion = new SelectInput(list, 
         Einstellungen.getEinstellung().getCt1SepaVersion());
     ct1sepaversion.setAttribute("file");
-    ct1sepaversion.setPleaseChoose("Bitte auswählen");
+    ct1sepaversion.setPleaseChoose("Bitte auswï¿½hlen");
     return ct1sepaversion;
   }
 
@@ -1607,6 +1629,95 @@ public class EinstellungControl extends AbstractControl
         new BuchungsartSort(Einstellungen.getEinstellung().getBuchungsartSort()));
     return buchungsartsort;
   }
+  
+  public IntegerInput getQRCodeSizeInMm() throws RemoteException
+  {
+  	if (null == qrcodesize)
+  	{
+  		qrcodesize = new IntegerInput(Einstellungen.getEinstellung().getQRCodeSizeInMm());
+  	}
+  	return qrcodesize;
+  }
+  
+	public TextInput getQRCodeVerwendungszweck() throws RemoteException {
+		if (null == qrcodetext)
+		{
+			qrcodetext = new TextInput(Einstellungen.getEinstellung().getQRCodeText());
+		}
+		return qrcodetext;
+	}
+
+	public CheckboxInput getQRCodePrintVerwendungszweck() throws RemoteException {
+		if (null == qrcodeptext)
+		{
+			qrcodeptext = new CheckboxInput(Einstellungen.getEinstellung().getQRCodeFesterText());
+		}
+		return qrcodeptext;
+	}
+
+	public CheckboxInput getQRCodeSingle() throws RemoteException {
+		if (null == qrcodesngl)
+		{
+			qrcodesngl = new CheckboxInput(Einstellungen.getEinstellung().getQRCodeSnglLine());
+		}
+		return qrcodesngl;
+	}
+
+	public CheckboxInput getQRCodeReDa() throws RemoteException {
+		if (null == qrcodepdate)
+		{
+			qrcodepdate = new CheckboxInput(Einstellungen.getEinstellung().getQRCodeDatum());
+		}
+		return qrcodepdate;
+	}
+
+	public CheckboxInput getQRCodeReNr() throws RemoteException {
+		if (null == qrcodeprenum)
+		{
+			qrcodeprenum = new CheckboxInput(Einstellungen.getEinstellung().getQRCodeReNu());
+		}
+		return qrcodeprenum;
+	}
+
+	public CheckboxInput getQRCodeMemberNr() throws RemoteException {
+		if (null == qrcodepmnum)
+		{
+			qrcodepmnum = new CheckboxInput(Einstellungen.getEinstellung().getQRCodeMember());
+		}
+		return qrcodepmnum;
+	}
+
+	public CheckboxInput getQRCodeExt() throws RemoteException {
+		if (null == qrcodeext)
+		{
+			qrcodeext = new CheckboxInput(Einstellungen.getEinstellung().getQRCodeExtNr());
+		}
+		return qrcodeext;
+	}
+
+	public TextInput getQRCodeInfoToMember() throws RemoteException {
+		if (null == qrcodeinfom)
+		{
+			qrcodeinfom = new TextInput(Einstellungen.getEinstellung().getQRCodeInfoM());
+		}
+		return qrcodeinfom;
+	}
+
+	public CheckboxInput getQRCodeKuerzen() throws RemoteException {
+		if (null ==qrcodekuerzen)
+		{
+			qrcodekuerzen = new CheckboxInput(Einstellungen.getEinstellung().getQRCodeKuerzen());
+		}
+		return qrcodekuerzen;
+	}
+
+	public TextInput getQRCodeIntro() throws RemoteException {
+		if (null == qrcodeintro)
+		{
+			qrcodeintro = new TextInput(Einstellungen.getEinstellung().getQRCodeIntro());
+		}
+		return qrcodeintro;
+	}
 
   // // public void handleStore()
   // {
@@ -1846,7 +1957,7 @@ public class EinstellungControl extends AbstractControl
       e.setLehrgaenge((Boolean) lehrgaenge.getValue());
       e.setJuristischePersonen((Boolean) juristischepersonen.getValue());
       e.setMitgliedfoto((Boolean) mitgliedfoto.getValue());
-      // TODO deaktiviert für Versionsbau
+      // TODO deaktiviert fï¿½r Versionsbau
       // e.setInventar((Boolean) inventar.getValue());
       e.setUseLesefelder((Boolean) uselesefelder.getValue());
       e.setZusatzadressen((Boolean) zusatzadressen.getValue());
@@ -2019,6 +2130,17 @@ public class EinstellungControl extends AbstractControl
       e.setRechnungTextBar((String) rechnungtextbar.getValue());
       Integer length = (Integer) zaehlerlaenge.getValue();
       e.setZaehlerLaenge(length);
+      e.setQRCodeSizeInMm((Integer)qrcodesize.getValue());
+      e.setQRCodeDatum((Boolean)qrcodepdate.getValue());
+      e.setQRCodeExtNr((Boolean)qrcodeext.getValue());
+      e.setQRCodeFesterText((Boolean)qrcodeptext.getValue());
+      e.setQRCodeInfoM((String)qrcodeinfom.getValue());
+      e.setQRCodeMember((Boolean)qrcodepmnum.getValue());
+      e.setQRCodeReNu((Boolean)qrcodeprenum.getValue());
+      e.setQRCodeSnglLine((Boolean)qrcodesngl.getValue());
+      e.setQRCodeText((String)qrcodetext.getValue());
+      e.setQRCodeIntro((String)qrcodeintro.getValue());
+      e.setQRCodeKuerzen((Boolean)qrcodekuerzen.getValue());
 
       e.store();
       Einstellungen.setEinstellung(e);
@@ -2242,5 +2364,4 @@ public class EinstellungControl extends AbstractControl
       }
     }
   }
-
 }

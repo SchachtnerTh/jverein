@@ -47,19 +47,19 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   private static final long serialVersionUID = 3513343626868776722L;
 
   /**
-   * Variable, in der gespeichert wird, ob für den Verein Zusatzfelder vorhanden
+   * Variable, in der gespeichert wird, ob fï¿½r den Verein Zusatzfelder vorhanden
    * sind.
    */
   private Boolean hasZus = null;
 
   /**
-   * settings speichert Benutzer-Präferenzen in einer config-Datei. Sie
-   * unterscheiden sich also auf jedem System und hängen nicht an der DB.
+   * settings speichert Benutzer-Prï¿½ferenzen in einer config-Datei. Sie
+   * unterscheiden sich also auf jedem System und hï¿½ngen nicht an der DB.
    */
   private final Settings settings;
 
   /**
-   * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
+   * Verschlï¿½sselte Datei fï¿½r besonders sensible Daten (Passwï¿½rter)
    */
   private Wallet wallet = null;
 
@@ -100,7 +100,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    throw new ApplicationException("Einstellung darf nicht gelöscht werden");
+    throw new ApplicationException("Einstellung darf nicht gelï¿½scht werden");
   }
 
   @Override
@@ -127,7 +127,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
         if (!JVereinPlugin.isArchiveServiceActive())
         {
           throw new ApplicationException(
-              "Plugin jameica.messaging ist nicht installiert oder im LAN verfügbar! Wird zur Dokumentenspeicherung benötigt!");
+              "Plugin jameica.messaging ist nicht installiert oder im LAN verfï¿½gbar! Wird zur Dokumentenspeicherung benï¿½tigt!");
         }
       }
       try
@@ -575,7 +575,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     setAttribute("mitgliedfoto", Boolean.valueOf(mitgliedfoto));
   }
 
-  // TODO für Versionsbau deaktivert.
+  // TODO fï¿½r Versionsbau deaktivert.
   // @Override
   // public Boolean getInventar() throws RemoteException
   // {
@@ -689,7 +689,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     String text = (String) getAttribute("rechnungtextueberweisung");
     if (text == null)
     {
-      text = "Bitte überweisen Sie den Betrag auf das angegebene Konto.";
+      text = "Bitte ï¿½berweisen Sie den Betrag auf das angegebene Konto.";
     }
     return text;
   }
@@ -1815,6 +1815,193 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
     {
       setAttribute("ct1sepaversion", ct1sepaversion.getFile());
     }
+  }
+
+  @Override
+  public int getQRCodeSizeInMm() throws RemoteException
+  {
+    Integer qrsizemm = (Integer) getAttribute("qrcodesizemm");
+    if (null == qrsizemm)
+    {
+      return 20;
+    }
+    return qrsizemm.intValue();
+  }
+
+  @Override
+  public void setQRCodeSizeInMm(int size) throws RemoteException
+  {
+    setAttribute("qrcodesizemm", size);
+  }
+
+  @Override
+  public boolean getQRCodeFesterText() throws RemoteException
+  {
+    Boolean printFesterText = (Boolean) getAttribute("qrcodeptext");
+    if (null == printFesterText)
+    {
+      return true;
+    }
+    return printFesterText.booleanValue();
+  }
+
+  @Override
+  public void setQRCodeFesterText(boolean printText) throws RemoteException
+  {
+    setAttribute("qrcodeptext", printText);
+  }
+
+  @Override
+  public boolean getQRCodeDatum() throws RemoteException
+  {
+    Boolean printDatum = (Boolean) getAttribute("qrcodepdate");
+    if (null == printDatum)
+    {
+      return false;
+    }
+    return printDatum.booleanValue();
+  }
+
+  @Override
+  public void setQRCodeDatum(boolean printDate) throws RemoteException
+  {
+    setAttribute("qrcodepdate", printDate);
+  }
+
+  @Override
+  public boolean getQRCodeReNu() throws RemoteException
+  {
+    Boolean printReNr = (Boolean) getAttribute("qrcodeprenum");
+    if (null == printReNr)
+    {
+      return false;
+    }
+    return printReNr.booleanValue();
+  }
+
+  @Override
+  public void setQRCodeReNu(boolean printReNum) throws RemoteException
+  {
+    setAttribute("qrcodeprenum", printReNum);
+  }
+
+  @Override
+  public boolean getQRCodeMember() throws RemoteException
+  {
+    Boolean printMemberNr = (Boolean) getAttribute("qrcodepmnum");
+    if (null == printMemberNr)
+    {
+      return false;
+    }
+    return printMemberNr.booleanValue();
+  }
+
+  @Override
+  public void setQRCodeMember(boolean printMember) throws RemoteException
+  {
+    setAttribute("qrcodepmnum", printMember);
+  }
+
+  @Override
+  public String getQRCodeText() throws RemoteException
+  {
+    String qrText = (String) getAttribute("qrcodetext");
+    if (null == qrText)
+    {
+      return "Mitgliedsbeitrag";
+    }
+    return qrText;
+  }
+
+  @Override
+  public void setQRCodeText(String text) throws RemoteException
+  {
+    setAttribute("qrcodetext", text);
+  }
+
+  @Override
+  public boolean getQRCodeSnglLine() throws RemoteException
+  {
+    Boolean replaceSnglLine = (Boolean) getAttribute("qrcodesngl");
+    if (null == replaceSnglLine)
+    {
+      return true;
+    }
+    return replaceSnglLine.booleanValue();
+  }
+
+  @Override
+  public void setQRCodeSnglLine(boolean single) throws RemoteException
+  {
+    setAttribute("qrcodesngl", single);
+  }
+
+  @Override
+  public boolean getQRCodeExtNr() throws RemoteException
+  {
+    Boolean useExtNr = (Boolean) getAttribute("qrcodeext");
+    if (null == useExtNr)
+    {
+      return false;
+    }
+    return useExtNr.booleanValue();
+  }
+
+  @Override
+  public void setQRCodeExtNr(boolean useExtNr) throws RemoteException
+  {
+    setAttribute("qrcodeext", useExtNr);
+  }
+
+  @Override
+  public String getQRCodeInfoM() throws RemoteException
+  {
+    String qrInfoToMember = (String) getAttribute("qrcodeinfom");
+    if (null == qrInfoToMember)
+    {
+      return "Vielen Dank fï¿½r Ihre Spende!";
+    }
+    return qrInfoToMember;
+  }
+
+  @Override
+  public void setQRCodeInfoM(String infoMitglied) throws RemoteException
+  {
+    setAttribute("qrcodeinfom", infoMitglied);
+  }
+
+  @Override
+  public boolean getQRCodeKuerzen() throws RemoteException
+  {
+    Boolean kuerzen = (Boolean) getAttribute("qrcodekuerzen");
+    if (null == kuerzen)
+    {
+      return false;
+    }
+    return kuerzen.booleanValue();
+  }
+
+  @Override
+  public void setQRCodeKuerzen(boolean kuerzen) throws RemoteException
+  {
+    setAttribute("qrcodekuerzen", kuerzen);
+  }
+
+  @Override
+  public String getQRCodeIntro() throws RemoteException
+  {
+    String intro = (String) getAttribute("qrcodeintro");
+    if (null == intro)
+    {
+      return "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen.";
+    }
+    return intro;
+  }
+
+  @Override
+  public void setQRCodeIntro(String intro) throws RemoteException
+  {
+    setAttribute("qrcodeintro", intro);
   }
 
 }
