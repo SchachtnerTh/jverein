@@ -294,6 +294,7 @@ public class KursteilnehmerControl extends AbstractControl
 
   public DateInput getMandatDatum() throws RemoteException
   {
+    
     if (mandatdatum != null)
     {
       return mandatdatum;
@@ -305,11 +306,11 @@ public class KursteilnehmerControl extends AbstractControl
       d = null;
     }
     this.mandatdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    this.mandatdatum.setMandatory(true);
     this.mandatdatum.setTitle("Datum des Mandats");
     this.mandatdatum.setName("Datum des Mandats");
     this.mandatdatum.setText("Bitte Datum des Mandats wählen");
     this.mandatdatum.setName("Datum des Mandats");
-    this.mandatdatum.setMandatory(true);
     return mandatdatum;
   }
 
@@ -359,6 +360,7 @@ public class KursteilnehmerControl extends AbstractControl
     Date d = getKursteilnehmer().getGeburtsdatum();
     this.geburtsdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.geburtsdatum.setTitle("Geburtsdatum");
+    this.geburtsdatum.setName("Geburtsdatum");
     this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
     this.geburtsdatum.setMandatory(true);
     return geburtsdatum;
