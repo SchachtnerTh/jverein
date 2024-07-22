@@ -34,8 +34,6 @@ public class GeschlechtInput extends SelectInput
   public static final String WEIBLICH = "w";
 
   public static final String OHNEANGABE = "o";
-  
-  public static final String KEINEAUSWAHL = "x";
 
   public GeschlechtInput(String geschlecht) throws RemoteException
   {
